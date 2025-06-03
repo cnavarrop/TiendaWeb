@@ -1,0 +1,12 @@
+<h2>Carrito</h2>
+{% if productos %}
+  <ul>
+    {% for p in productos %}
+      <li>{{ p.nombre }} - ${{ p.precio }}</li>
+    {% endfor %}
+  </ul>
+  <a href="/vaciar_carrito">Vaciar carrito</a>
+{% else %}
+  <p>Tu carrito está vacío.</p>
+{% endif %}
+<a href="/">Seguir comprando</a>

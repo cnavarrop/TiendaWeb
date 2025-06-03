@@ -1,0 +1,12 @@
+<h2>Admin - Productos</h2>
+<a href="/producto/nuevo">➕ Crear nuevo producto</a>
+<ul>
+  {% for p in productos %}
+    <li>
+      {{ p.nombre }} - ${{ p.precio }}
+      <a href="/producto/editar/{{ p.id }}">✏️</a>
+      <a href="/producto/eliminar/{{ p.id }}">🗑️</a>
+    </li>
+  {% endfor %}
+</ul>
+<a href="/admin/logout">Salir del panel</a>

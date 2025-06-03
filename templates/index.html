@@ -1,0 +1,12 @@
+<h1>Bienvenido a la Tienda</h1>
+<a href="/carrito">🛒 Ver Carrito</a>
+<div class="product-grid">
+  {% for p in productos %}
+    <div>
+      <img src="{{ p.imagen }}" width="150">
+      <h3>{{ p.nombre }}</h3>
+      <p>${{ p.precio }}</p>
+      <a href="/agregar/{{ p.id }}">Agregar al carrito</a>
+    </div>
+  {% endfor %}
+</div>
