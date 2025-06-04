@@ -1,12 +1,142 @@
-<h1>Bienvenido a la Tienda</h1>
-<a href="/carrito">🛒 Ver Carrito</a>
-<div class="product-grid">
-  {% for p in productos %}
-    <div>
-      <img src="{{ p.imagen }}" width="150">
-      <h3>{{ p.nombre }}</h3>
-      <p>${{ p.precio }}</p>
-      <a href="/agregar/{{ p.id }}">Agregar al carrito</a>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tienda DLDS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              500: '#6b46c1',
+              600: '#553c9a',
+              700: '#44337a',
+            },
+            secondary: {
+              500: '#48bb78',
+              600: '#38a169',
+            },
+            accent: {
+              100: '#faf5ff',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-accent-100 text-gray-800">
+
+  <!-- Header con menú completo -->
+  <header class="bg-primary-700 text-white shadow-md">
+    <div class="container mx-auto px-4">
+      <div class="flex justify-between items-center py-4">
+        <h1 class="text-2xl font-bold">Tienda DLDS</h1>
+        <div class="flex items-center space-x-4">
+          <a href="/carrito" class="bg-white text-primary-600 px-4 py-2 rounded-full font-semibold shadow hover:bg-primary-100 hover:text-primary-700 transition-all flex items-center">
+            🛒 Carrito <span class="ml-1 bg-secondary-500 text-white text-xs px-2 py-1 rounded-full">0</span>
+          </a>
+        </div>
+      </div>
+      
+      <!-- Menú de navegación -->
+      <nav class="relative">
+        <ul class="flex space-x-1">
+          <li class="group relative">
+            <a href="#" class="block py-3 px-4 hover:bg-primary-600 rounded-t transition-all font-medium flex items-center">
+              Productos ▼
+            </a>
+            <!-- Submenú Productos -->
+            <div class="absolute left-0 mt-0 w-56 bg-white shadow-lg rounded-b rounded-tr z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+              <div class="py-1">
+                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-100 hover:text-primary-700 border-b border-gray-100">Electrónica</a>
+                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-100 hover:text-primary-700 border-b border-gray-100">Hogar</a>
+                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-100 hover:text-primary-700 border-b border-gray-100">Oficina</a>
+                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-100 hover:text-primary-700">Tecnología</a>
+              </div>
+            </div>
+          </li>
+          
+          <li>
+            <a href="#" class="block py-3 px-4 hover:bg-primary-600 rounded-t transition-all font-medium">
+              Promociones
+            </a>
+          </li>
+          
+          <li class="group relative">
+            <a href="#" class="block py-3 px-4 hover:bg-primary-600 rounded-t transition-all font-medium">
+              Contacto
+            </a>
+            <!-- Submenú Contacto -->
+            <div class="absolute left-0 mt-0 w-48 bg-white shadow-lg rounded-b rounded-tr z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+              <div class="py-1">
+                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-100 hover:text-primary-700 border-b border-gray-100">Formulario</a>
+                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-100 hover:text-primary-700 border-b border-gray-100">Sucursales</a>
+                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-100 hover:text-primary-700">WhatsApp</a>
+              </div>
+            </div>
+          </li>
+          
+          <li>
+            <a href="#" class="block py-3 px-4 hover:bg-primary-600 rounded-t transition-all font-medium">
+              Nosotros
+            </a>
+          </li>
+        </ul>
+      </nav>
     </div>
-  {% endfor %}
-</div>
+  </header>
+
+  <main class="max-w-7xl mx-auto p-6">
+    <h2 class="text-xl font-semibold mb-6 text-primary-700">Nuevos Productos</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+      {% for p in productos %}
+      <div class="bg-white rounded-2xl shadow-md p-5 flex flex-col items-center text-center hover:shadow-xl transition-all transform hover:-translate-y-1 border border-gray-100">
+        <img src="{{ p.imagen }}" alt="{{ p.nombre }}" class="w-40 h-40 object-contain mb-4 p-2">
+        <h3 class="text-lg font-semibold text-gray-800">{{ p.nombre }}</h3>
+        <p class="text-primary-600 font-bold text-xl my-2">${{ p.precio }} Neto</p>
+        <div class="flex space-x-2 mt-3">
+          <a href="/agregar/{{ p.id }}" class="bg-secondary-500 text-white px-4 py-2 rounded-full hover:bg-secondary-600 transition-all shadow hover:shadow-md text-sm">
+            ➕ Carrito
+          </a>
+          <a href="#" class="bg-primary-100 text-primary-700 px-4 py-2 rounded-full hover:bg-primary-200 transition-all shadow hover:shadow-md text-sm">
+            🔍 Detalles
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </main>
+
+  <footer class="bg-primary-700 text-white p-4 mt-12 text-center text-sm shadow-inner">
+    <div class="container mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+        <div>
+          <h3 class="font-bold text-lg mb-2">Tienda DLDS</h3>
+          <p class="text-primary-100">Distribuidores líderes en productos de calidad para todos tus necesidades.</p>
+        </div>
+        <div>
+          <h3 class="font-bold text-lg mb-2">Enlaces rápidos</h3>
+          <ul class="space-y-1">
+            <li><a href="#" class="hover:text-secondary-500 transition">Políticas de envío</a></li>
+            <li><a href="#" class="hover:text-secondary-500 transition">Preguntas frecuentes</a></li>
+            <li><a href="#" class="hover:text-secondary-500 transition">Términos y condiciones</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-bold text-lg mb-2">Contacto</h3>
+          <p class="text-primary-100">contacto@tiendadlds.com</p>
+          <p class="text-primary-100">Tel: +56 9 1234 5678</p>
+        </div>
+      </div>
+      <div class="border-t border-primary-600 mt-6 pt-6">
+        © {{ year }} DLDS Distribuidores - Todos los derechos reservados
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
