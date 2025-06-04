@@ -1,12 +1,184 @@
-<h2>Carrito</h2>
-{% if productos %}
-  <ul>
-    {% for p in productos %}
-      <li>{{ p.nombre }} - ${{ p.precio }}</li>
-    {% endfor %}
-  </ul>
-  <a href="/vaciar_carrito">Vaciar carrito</a>
-{% else %}
-  <p>Tu carrito está vacío.</p>
-{% endif %}
-<a href="/">Seguir comprando</a>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tu Carrito | PuroBrote</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              500: '#6b46c1',
+              600: '#553c9a',
+              700: '#44337a',
+            },
+            secondary: {
+              500: '#48bb78',
+              600: '#38a169',
+            },
+            accent: {
+              100: '#faf5ff',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-accent-100 text-gray-800">
+
+<!-- Header -->
+<header class="bg-primary-700 text-white shadow-md">
+  <div class="container mx-auto px-4">
+    <div class="flex justify-between items-center py-4">
+      <h1 class="text-2xl font-bold">Puro Brote</h1>
+      <div class="flex items-center space-x-4">
+        {% if not admin_logged_in %}
+        <a href="/admin/login" class="text-white hover:text-secondary-400 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        </a>
+        {% else %}
+        <a href="/admin/productos" class="text-white hover:text-secondary-400 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </a>
+        {% endif %}
+        <a href="/carrito" class="flex items-center">
+          🛒 Carrito
+          <span id="contador-carrito" class="ml-1 bg-secondary-500 text-white text-xs px-2 py-1 rounded-full">
+            {{ total_carrito or 0 }}
+          </span>
+        </a>
+      </div>
+    </div>
+    <!-- Navegación -->
+    <nav class="relative">
+      <ul class="flex space-x-1">
+        <li class="group relative">
+          <a href="#" class="block py-3 px-4 hover:bg-primary-600 rounded-t transition-all font-medium flex items-center">
+            Productos ▼
+          </a>
+          <div class="absolute left-0 mt-0 w-56 bg-white shadow-lg rounded-b rounded-tr z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+            <div class="py-1">
+              <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-100 hover:text-primary-700 border-b border-gray-100">Electrónica</a>
+              <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-100 hover:text-primary-700 border-b border-gray-100">Hogar</a>
+              <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-100 hover:text-primary-700 border-b border-gray-100">Oficina</a>
+              <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-100 hover:text-primary-700">Tecnología</a>
+            </div>
+          </div>
+        </li>
+        <li><a href="#" class="block py-3 px-4 hover:bg-primary-600 rounded-t transition-all font-medium">Promociones</a></li>
+        <li class="group relative">
+          <a href="#" class="block py-3 px-4 hover:bg-primary-600 rounded-t transition-all font-medium">Contacto</a>
+          <div class="absolute left-0 mt-0 w-48 bg-white shadow-lg rounded-b rounded-tr z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+            <div class="py-1">
+              <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-100 hover:text-primary-700 border-b border-gray-100">Formulario</a>
+              <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-100 hover:text-primary-700 border-b border-gray-100">Sucursales</a>
+              <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-primary-100 hover:text-primary-700">WhatsApp</a>
+            </div>
+          </div>
+        </li>
+        <li><a href="#" class="block py-3 px-4 hover:bg-primary-600 rounded-t transition-all font-medium">Nosotros</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<!-- Contenido principal -->
+<main class="max-w-4xl mx-auto p-6">
+  <h2 class="text-2xl font-bold text-primary-700 mb-6">🛒 Tu Carrito</h2>
+
+  {% if carrito %}
+  <div class="flex justify-between mt-6">
+  <a href="/productos" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-full text-sm">
+    ← Seguir comprando
+  </a>
+  <div class="flex space-x-3">
+    <form action="/vaciar_carrito" method="get">
+      <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow hover:shadow-md">
+        Vaciar carrito 🗑️
+      </button>
+    </form>
+    <a href="/checkout" class="bg-secondary-500 hover:bg-secondary-600 text-white px-6 py-2 rounded-full text-sm font-semibold shadow hover:shadow-md">
+      Proceder al pago
+    </a>
+  </div>
+</div>
+
+  <div class="bg-white shadow rounded-2xl p-6 space-y-4">
+   {% for item in carrito %}
+<div class="flex items-center justify-between border-b pb-4">
+  <div class="flex items-center space-x-4">
+    <img src="{{ item.imagen }}" alt="{{ item.nombre }}" class="w-16 h-16 object-contain rounded">
+    <div>
+      <h3 class="font-semibold text-lg">{{ item.nombre }}</h3>
+      <p class="text-sm text-gray-500">Precio unitario: ${{ item.precio }}</p>
+      <p class="text-sm text-gray-500">Cantidad: {{ item.cantidad }}</p>
+      <p class="text-sm font-semibold text-primary-700">Subtotal: ${{ item.subtotal }}</p>
+    </div>
+  </div>
+  <form action="/carrito/eliminar/{{ item.id }}" method="POST">
+    <button class="text-red-500 hover:text-red-700 text-sm" title="Eliminar">🗑️</button>
+  </form>
+</div>
+{% endfor %}
+    <div class="flex justify-between items-center pt-4 border-t font-bold text-xl text-primary-700">
+      <span>Total:</span>
+      <span>${{ total }}</span>
+    </div>
+
+    <div class="flex justify-end mt-6 space-x-3">
+      <a href="/productos" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-full text-sm">← Seguir comprando</a>
+      <a href="/checkout" class="bg-secondary-500 hover:bg-secondary-600 text-white px-6 py-2 rounded-full text-sm font-semibold shadow hover:shadow-md">Proceder al pago</a>
+    </div>
+  </div>
+  {% else %}
+  <div class="text-center bg-white p-10 rounded-2xl shadow">
+    <p class="text-lg text-gray-600 mb-4">Tu carrito está vacío 🛍️</p>
+    <a href="/productos" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-full font-semibold shadow hover:shadow-md transition">Explorar productos</a>
+  </div>
+  {% endif %}
+</main>
+
+<!-- Footer -->
+<footer class="bg-primary-700 text-white p-4 mt-12 text-center text-sm shadow-inner">
+  <div class="container mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+      <div>
+        <h3 class="font-bold text-lg mb-2">GreenMarket Ltda</h3>
+        <p class="text-primary-100">líderes en productos de calidad para todos tus necesidades.</p>
+      </div>
+      <div>
+        <h3 class="font-bold text-lg mb-2">Enlaces rápidos</h3>
+        <ul class="space-y-1">
+          <li><a href="#" class="hover:text-secondary-500 transition">Políticas de envío</a></li>
+          <li><a href="#" class="hover:text-secondary-500 transition">Preguntas frecuentes</a></li>
+          <li><a href="#" class="hover:text-secondary-500 transition">Términos y condiciones</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-lg mb-2">Contacto</h3>
+        <p class="text-primary-100">info@purobrote.cl</p>
+        <p class="text-primary-100">Tel: +56 9 1234 5678</p>
+      </div>
+    </div>
+    <div class="border-t border-primary-600 mt-6 pt-6">
+      © {{ year }} Puro Brote - Todos los derechos reservados
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

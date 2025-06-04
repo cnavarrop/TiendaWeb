@@ -1,5 +1,65 @@
-<h2>Login Admin</h2>
-<form method="post">
-  <input type="password" name="password" placeholder="Contraseña">
-  <button type="submit">Entrar</button>
-</form>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - DLDS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              500: '#6b46c1',
+              600: '#553c9a',
+              700: '#44337a',
+            },
+            secondary: {
+              500: '#48bb78',
+              600: '#38a169',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-100">
+  <div class="min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-primary-700 mb-2">DLDS Admin</h1>
+        <p class="text-gray-600">Panel de administración</p>
+      </div>
+
+      {% if error %}
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        {{ error }}
+      </div>
+      {% endif %}
+
+      <form method="post" class="space-y-6">
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
+          <input type="text" id="username" name="username" required 
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500">
+        </div>
+        
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+          <input type="password" id="password" name="password" required 
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500">
+        </div>
+
+        <div>
+          <button type="submit" 
+                  class="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition">
+            Ingresar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

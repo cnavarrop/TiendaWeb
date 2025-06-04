@@ -1,12 +1,220 @@
-<h2>Admin - Productos</h2>
-<a href="/producto/nuevo">➕ Crear nuevo producto</a>
-<ul>
-  {% for p in productos %}
-    <li>
-      {{ p.nombre }} - ${{ p.precio }}
-      <a href="/producto/editar/{{ p.id }}">✏️</a>
-      <a href="/producto/eliminar/{{ p.id }}">🗑️</a>
-    </li>
-  {% endfor %}
-</ul>
-<a href="/admin/logout">Salir del panel</a>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Productos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              500: '#6b46c1',
+              600: '#553c9a',
+              700: '#44337a',
+            },
+            secondary: {
+              500: '#48bb78',
+              600: '#38a169',
+            },
+            danger: {
+              500: '#ef4444',
+              600: '#dc2626'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+  <!-- Header -->
+  <header class="bg-primary-700 text-white shadow-lg">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <h1 class="text-xl md:text-2xl font-bold flex items-center">
+        <i class="fas fa-cog mr-2"></i> Panel de Administración
+      </h1>
+      <nav>
+        <ul class="flex space-x-4 items-center">
+          <li>
+            <a href="/admin/logout" class="flex items-center px-3 py-2 bg-white text-primary-600 rounded-full hover:bg-gray-100 transition">
+              <i class="fas fa-sign-out-alt mr-1"></i> Salir
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container mx-auto px-4 py-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+      <h2 class="text-2xl font-bold text-primary-700">
+        <i class="fas fa-boxes mr-2"></i> Gestión de Productos
+      </h2>
+      <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+        <form class="relative" method="get" action="/admin/productos">
+          <input type="text" name="q" placeholder="Buscar productos..." 
+                 class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 w-full"
+                 value="{{ query if query else '' }}">
+          <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+        </form>
+        <a href="/producto/nuevo" class="bg-secondary-500 hover:bg-secondary-600 text-white px-4 py-2 rounded-lg transition flex items-center justify-center whitespace-nowrap">
+          <i class="fas fa-plus mr-2"></i> Nuevo Producto
+        </a>
+      </div>
+    </div>
+
+    <!-- Product List -->
+    <div class="bg-white rounded-xl shadow overflow-hidden mb-6">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <!-- Encabezados de tabla... (igual que antes) -->
+          <thead class="bg-primary-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-primary-700 uppercase tracking-wider">Producto</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-primary-700 uppercase tracking-wider">Precio</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-primary-700 uppercase tracking-wider">Subproductos</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-primary-700 uppercase tracking-wider">Acciones</th>
+            </tr>
+          </thead>
+          <!-- Cuerpo de tabla... (igual que antes) -->
+          <tbody class="bg-white divide-y divide-gray-200">
+            {% for p in productos %}
+            <tr class="hover:bg-gray-50 transition">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  {% if p.imagen %}
+                  <div class="flex-shrink-0 h-10 w-10">
+                    <img class="h-10 w-10 rounded-full object-cover" src="{{ p.imagen }}" alt="{{ p.nombre }}">
+                  </div>
+                  {% endif %}
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900">{{ p.nombre }}</div>
+                    <div class="text-sm text-gray-500">ID: {{ p.id }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${{ p.precio }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex flex-wrap gap-1">
+                  {% if p.subproductos %}
+                    {% for sub in p.subproductos %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
+                      {{ sub.nombre }}
+                    </span>
+                    {% endfor %}
+                  {% else %}
+                    <span class="text-sm text-gray-500">Sin subproductos</span>
+                  {% endif %}
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <div class="flex space-x-3">
+                  <a href="/producto/editar/{{ p.id }}" class="text-primary-600 hover:text-primary-900" title="Editar">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <a href="/producto/eliminar/{{ p.id }}" class="text-danger-500 hover:text-danger-700" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar este producto?')">
+                    <i class="fas fa-trash-alt"></i>
+                  </a>
+                  <a href="/producto/{{ p.id }}/subproducto/nuevo" class="text-secondary-600 hover:text-secondary-900" title="Añadir subproducto">
+                    <i class="fas fa-plus-circle"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Paginación -->
+    {% if pagination and pagination.pages > 1 %}
+    <div class="flex items-center justify-between border-t border-gray-200 px-4 py-3 sm:px-6">
+      <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+        <div>
+          <p class="text-sm text-gray-700">
+            Mostrando
+            <span class="font-medium">{{ pagination.skip + 1 }}</span>
+            a
+            <span class="font-medium">{{ [pagination.skip + pagination.limit, pagination.total]|min }}</span>
+            de
+            <span class="font-medium">{{ pagination.total }}</span>
+            resultados
+          </p>
+        </div>
+        <div>
+          <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+            {% if pagination.page > 1 %}
+            <a href="?page={{ pagination.page - 1 }}{% if query %}&q={{ query }}{% endif %}" class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+              <span class="sr-only">Anterior</span>
+              <i class="fas fa-chevron-left h-4 w-4"></i>
+            </a>
+            {% endif %}
+
+            {% for p in range(1, pagination.pages + 1) %}
+              {% if p == pagination.page %}
+              <a href="#" aria-current="page" class="relative z-10 inline-flex items-center bg-primary-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+                {{ p }}
+              </a>
+              {% else %}
+                {% if (p >= pagination.page - 2 and p <= pagination.page + 2) or p == 1 or p == pagination.pages %}
+                  <a href="?page={{ p }}{% if query %}&q={{ query }}{% endif %}" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                    {{ p }}
+                  </a>
+                {% elif (p == pagination.page - 3 and pagination.page > 4) or (p == pagination.page + 3 and pagination.page < pagination.pages - 3) %}
+                  <span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700">...</span>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+
+            {% if pagination.page < pagination.pages %}
+            <a href="?page={{ pagination.page + 1 }}{% if query %}&q={{ query }}{% endif %}" class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+              <span class="sr-only">Siguiente</span>
+              <i class="fas fa-chevron-right h-4 w-4"></i>
+            </a>
+            {% endif %}
+          </nav>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Empty State -->
+    {% if not productos %}
+    <div class="text-center py-12">
+      <i class="fas fa-box-open text-4xl text-gray-300 mb-4"></i>
+      <h3 class="text-lg font-medium text-gray-900">No hay productos registrados</h3>
+      <p class="mt-1 text-sm text-gray-500">Comienza agregando tu primer producto.</p>
+      <div class="mt-6">
+        <a href="/producto/nuevo" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-secondary-500 hover:bg-secondary-600">
+          <i class="fas fa-plus mr-2"></i> Crear Producto
+        </a>
+      </div>
+    </div>
+    {% endif %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-gray-200 mt-8">
+    <div class="container mx-auto px-4 py-4 text-center text-sm text-gray-500">
+      © {{ year }}  Admin Panel - Versión 1.0
+    </div>
+  </footer>
+
+  <script>
+    // Confirmación antes de eliminar
+    document.querySelectorAll('[onclick="return confirm(\'¿Estás seguro de eliminar este producto?\')"]').forEach(link => {
+      link.addEventListener('click', function(e) {
+        if(!confirm('¿Estás seguro de eliminar este producto?')) {
+          e.preventDefault();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

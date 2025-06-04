@@ -1,7 +1,255 @@
-<h2>{{ producto and 'Editar' or 'Nuevo' }} Producto</h2>
-<form method="post">
-  <input name="nombre" value="{{ producto.nombre if producto else '' }}" placeholder="Nombre"><br>
-  <input name="precio" value="{{ producto.precio if producto else '' }}" placeholder="Precio" type="number" step="0.01"><br>
-  <input name="imagen" value="{{ producto.imagen if producto else '' }}" placeholder="URL Imagen"><br>
-  <button type="submit">Guardar</button>
-</form>
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ 'Editar' if producto else 'Nuevo' }} Producto - DLDS Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              500: '#6b46c1',
+              600: '#553c9a',
+              700: '#44337a',
+            },
+            secondary: {
+              500: '#48bb78',
+              600: '#38a169',
+            },
+            danger: {
+              500: '#ef4444',
+              600: '#dc2626'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-gray-50">
+  <!-- Header -->
+  <header class="bg-primary-700 text-white shadow-lg">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <h1 class="text-xl md:text-2xl font-bold flex items-center">
+        <i class="fas fa-cog mr-2"></i> Panel de Administración
+      </h1>
+      <nav>
+        <ul class="flex space-x-4 items-center">
+          <li>
+            <a href="/admin/productos"
+              class="flex items-center px-3 py-2 bg-white text-primary-600 rounded-full hover:bg-gray-100 transition">
+              <i class="fas fa-arrow-left mr-1"></i> Volver
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+      <div class="bg-white rounded-xl shadow p-6">
+        <h2 class="text-2xl font-bold text-primary-700 mb-6">
+          <i class="fas {{ 'fa-edit' if producto else 'fa-plus-circle' }} mr-2"></i>
+          {{ 'Editar' if producto else 'Nuevo' }} Producto
+        </h2>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+          <!-- Mensajes de error -->
+          {% if error %}
+          <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            {{ error }}
+          </div>
+          {% endif %}
+
+          <!-- Campos del formulario -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="nombre" class="block text-sm font-medium text-gray-700 mb-1">Nombre del Producto *</label>
+              <input type="text" id="nombre" name="nombre" value="{{ producto.nombre if producto else '' }}" required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                placeholder="Ej: Smartphone X9 Pro">
+            </div>
+
+            <div>
+              <label for="precio" class="block text-sm font-medium text-gray-700 mb-1">Precio *</label>
+              <input type="number" id="precio" name="precio" min="0" step="0.01"
+                value="{{ producto.precio if producto else '' }}" required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                placeholder="Ej: 299.99">
+            </div>
+
+            <div>
+              <label for="categoria" class="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
+              <select id="categoria" name="categoria" required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500">
+                <option value="">Seleccione una categoría</option>
+                <option value="electronica" {% if producto and producto.categoria=='electronica' %}selected{% endif %}>
+                  Electrónica</option>
+                <option value="hogar" {% if producto and producto.categoria=='hogar' %}selected{% endif %}>Hogar
+                </option>
+                <option value="oficina" {% if producto and producto.categoria=='oficina' %}selected{% endif %}>Oficina
+                </option>
+                <option value="tecnologia" {% if producto and producto.categoria=='tecnologia' %}selected{% endif %}>
+                  Tecnología</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="stock" class="block text-sm font-medium text-gray-700 mb-1">Stock Disponible *</label>
+              <input type="number" id="stock" name="stock" min="0" value="{{ producto.stock if producto else '0' }}"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                placeholder="Ej: 100">
+            </div>
+
+            <div class="md:col-span-2">
+              <label for="descripcion" class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+              <textarea id="descripcion" name="descripcion" rows="3"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                placeholder="Descripción detallada del producto">{{ producto.descripcion if producto else '' }}</textarea>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Imagen del Producto</label>
+              <div class="mt-1 flex items-center">
+                <span class="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100 mr-4">
+                  {% if producto and producto.imagen %}
+                  <img src="{{ producto.imagen }}" class="h-full w-full object-cover">
+                  {% else %}
+                  <svg class="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                  {% endif %}
+                </span>
+                <input type="file" id="imagen" name="imagen" accept="image/*"
+                  class="py-1.5 px-3 text-sm text-gray-700 border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+              </div>
+              {% if producto and producto.imagen %}
+              <div class="mt-2 flex items-center">
+                <input type="checkbox" id="eliminar_imagen" name="eliminar_imagen"
+                  class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                <label for="eliminar_imagen" class="ml-2 block text-sm text-gray-700">Eliminar imagen actual</label>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Subproductos -->
+          <div class="border-t border-gray-200 pt-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">
+              <i class="fas fa-boxes mr-2"></i> Subproductos
+            </h3>
+            <div id="subproductos-container" class="space-y-4">
+              {% if producto and producto.subproductos %}
+              {% for sub in producto.subproductos %}
+              <div class="subproducto flex items-start space-x-4">
+                <input type="hidden" name="subproductos[{{ loop.index0 }}][id]" value="{{ sub.id }}">
+                <div class="flex-1">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Subproducto</label>
+                  <input type="text" name="subproductos[{{ loop.index0 }}][nombre]" value="{{ sub.nombre }}"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                </div>
+                <div class="flex-1">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Precio Adicional</label>
+                  <input type="number" name="subproductos[{{ loop.index0 }}][precio_extra]" min="0" step="0.01"
+                    value="{{ sub.precio_extra }}"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                </div>
+                <button type="button" class="remove-subproducto mt-6 px-2 text-red-500 hover:text-red-700">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+              {% endfor %}
+              {% endif %}
+            </div>
+            <button type="button" id="agregar-subproducto"
+              class="mt-3 inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+              <i class="fas fa-plus mr-1"></i> Añadir Subproducto
+            </button>
+          </div>
+
+          <!-- Botones de acción -->
+          <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+            <a href="/admin/productos"
+              class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+              Cancelar
+            </a>
+            <button type="submit"
+              class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-secondary-500 hover:bg-secondary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-500">
+              <i class="fas fa-save mr-1"></i> Guardar Producto
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-gray-200 mt-8">
+    <div class="container mx-auto px-4 py-4 text-center text-sm text-gray-500">
+      © {{ year }} DLDS Admin Panel - Versión 1.0
+    </div>
+  </footer>
+
+  <script>
+    // Añadir subproductos dinámicamente
+    document.getElementById('agregar-subproducto').addEventListener('click', function () {
+      const container = document.getElementById('subproductos-container');
+      const index = container.children.length;
+
+      const subproductoHTML = `
+        <div class="subproducto flex items-start space-x-4">
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Subproducto</label>
+            <input type="text" name="subproductos[${index}][nombre]" 
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+          </div>
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Precio Adicional</label>
+            <input type="number" name="subproductos[${index}][precio_extra]" min="0" step="0.01"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+          </div>
+          <button type="button" class="remove-subproducto mt-6 px-2 text-red-500 hover:text-red-700">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>`;
+
+      container.insertAdjacentHTML('beforeend', subproductoHTML);
+    });
+
+    // Eliminar subproductos
+    document.addEventListener('click', function (e) {
+      if (e.target.classList.contains('remove-subproducto') ||
+        e.target.closest('.remove-subproducto')) {
+        e.preventDefault();
+        const btn = e.target.classList.contains('remove-subproducto') ?
+          e.target : e.target.closest('.remove-subproducto');
+        btn.closest('.subproducto').remove();
+      }
+    });
+
+    // Vista previa de la imagen
+    document.getElementById('imagen').addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          const preview = e.target.previousElementSibling;
+          preview.innerHTML = `<img src="${event.target.result}" class="h-full w-full object-cover">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
+</body>
+
+</html>
